@@ -52,10 +52,9 @@ port        = 7496 ;        # TWS is listening on the defualt port
 pauseBetween = 11 ;         # IB rate limits historical data reqiests to no more than 6 in 60 seconds.
 
 
-# Column names of the historical daily data. Any data returned via
-# reqHistoricalData() will have the ticker preprened to the column name. For
-# example ESH7.Open, ESH7.Volume, etc.  Use the column names below as
-# replacements.
+# Column names of the historical data. Any data returned via reqHistoricalData()
+# will have the ticker preprened to the column name. For example ESH7.Open,
+# ESH7.Volume, etc.  Use the column names below as replacements.
 gColNames   = c("DateTime", "Open", "High", "Low", "Close", "Volume", "WAP", "hasGaps", "Count") ;
 
 ############################################################
@@ -130,7 +129,7 @@ mergeAndSave <- function(oldData, newData, fileName, oldFileName=NULL) {
 
 ############################################################
 #
-fetchStockData <- function(contract, startDT, endDT, numberBars=2000, barSize=5) {
+fetchStockData <- function(connection, contract, startDT, endDT, numberBars=2000, barSize=5) {
 
   currentDT   = startDT ;
   requestSecs = numberBars * barSize ;
@@ -147,7 +146,7 @@ fetchStockData <- function(contract, startDT, endDT, numberBars=2000, barSize=5)
       tryCatch(
         # Returns data in an xts object in your local timezone.
         reqHistoricalData(
-          conn        = tws,
+          conn        = connection,
           Contract    = contract,
           endDateTime = requestEndTimeStr,
           barSize     = barSizeStr, # "1 secs", "5 secs"
@@ -196,7 +195,7 @@ fetchStockData <- function(contract, startDT, endDT, numberBars=2000, barSize=5)
 setwd("~/") ;
 tws         = twsConnect(clientId=clientId, host=host, port=port) ;
 contractES  = twsFUT(symbol=symbol, exch=exchange, expiry=expiry, include_expired=1 ) ;
-newData     = fetchStockData(contract=contractES, startDT=startDT, endDT=endDT, numberBars=2000, barSize=barSize) ;
+newData     = fetchStockData(connection=tws, contract=contractES, startDT=startDT, endDT=endDT, numberBars=2000, barSize=barSize) ;
 oldData     = loadStockFile(ticker, fileName) ;
 allData     = mergeAndSave(oldData, newData, fileName, fileNameOld) ;
 
@@ -213,7 +212,7 @@ allData     = mergeAndSave(oldData, newData, fileName, fileNameOld) ;
 # contract = twsContract(conId=1935181, symbol=symbol, sectype=secType, exch=exchange, primary="", 
 #                        expiry="",strike="", currency="USD", right="", local="",
 #                        multiplier = "", combo_legs_desc="", comboleg="", include_expired="") ;
-# newData     = fetchStockData(contract=contract, startDT=startDT, endDT=endDT, numberBars=duration, barSize=barSize) ;
+# newData     = fetchStockData(connection=tws, contract=contract, startDT=startDT, endDT=endDT, numberBars=duration, barSize=barSize) ;
 
 twsDisconnect(tws) ;
 
