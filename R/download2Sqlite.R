@@ -33,10 +33,10 @@ require(IBrokers) ;
 ############################################################
 
 
-tzone       = "America/Los_Angeles" ; # Other popular options include "America/New_York", or "America/Chicago".
-Old.TZ = Sys.getenv("TZ")   ;         # Old.TZ is usually an empty string in most R environments.
+tzone = "America/Los_Angeles" ;  # Other popular options include "America/New_York", or "America/Chicago".
+oldTZ = Sys.getenv("TZ")   ;     # Old.TZ is usually an empty string in most R environments.
 Sys.setenv(TZ=tzone) ;
-
+on.exit(Sys.setenv(TZ=oldTZ)) ;
 
 # Parameters that you will likely change when you run this program.
 # The time range to retreive historical data.  Note: this program counts time
@@ -180,8 +180,8 @@ if ( DBI::dbExistsTable(db, "Bars") == FALSE ) {
 
 # Connect to TWS API and fetch the historical data and store it in 'hData'.
 tws         = twsConnect(clientId=clientId, host=host, port=port) ;
-contractES  = twsFUT(symbol=symbol, exch=exchange, expiry=expiry, include_expired=1 ) ;
-hData       = fetchStockData(connection=tws, contract=contractES, startDT=startDT, endDT=endDT, numberBars=2000, barSize=barSize) ;
+contract    = twsFUT(symbol=symbol, exch=exchange, expiry=expiry, include_expired=1 ) ;
+hData       = fetchStockData(connection=tws, contract=contract, startDT=startDT, endDT=endDT, numberBars=2000, barSize=barSize) ;
 twsDisconnect(tws) ;
 
 # hData is a xts object.  Convert it to a data.frame and save it to a sqlite database.
