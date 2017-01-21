@@ -28,9 +28,10 @@ library(lubridate)
 #                 GLOBAL VARIABLES
 ############################################################
 
-tzone       = "America/Los_Angeles" ; # Other popular options include "America/New_York", or "America/Chicago"
-Old.TZ = Sys.getenv("TZ")   ;         # Old.TZ is usually an empty string in most R environments
+tzone = "America/Los_Angeles" ;  # Other popular options include "America/New_York", or "America/Chicago"
+oldTZ = Sys.getenv("TZ") ;       # Old.TZ is usually an empty string in most R environments
 Sys.setenv(TZ=tzone) ;
+on.exit(Sys.setenv(TZ=oldTZ)) ;
 
 # The time range to retreive historical data.  Note: this program counts time
 # backwards, or counts down time.
